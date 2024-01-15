@@ -51,5 +51,16 @@ services:
       - ACCEPT_EULA=Y
     ports:
       - "1433:1433"
+
+  locust:
+    image: locustio/locust
+    volumes:
+      - ./locust:/mnt/locust
+      - ../../test-results:/mnt/results
+    entrypoint: []
+    command: /bin/sh -c "sleep 15 && locust -f /mnt/locust/locustfile_net8.py --headless -u 1000 -r 5 --run-time 120 --host http://nginx/ --html /mnt/results/net8-results.htm"
+    depends_on: 
+      - nginx
+    
   
 

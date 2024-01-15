@@ -5,7 +5,7 @@ set -e
 /opt/mssql/bin/sqlservr &
 
 # Esperar a que SQL Server se inicie por completo (ajusta el tiempo según sea necesario)
-sleep 20s
+sleep 10s
 
 # Restaurar la base de datos
 /opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P "P@ssw0rd" -d master -i /var/opt/mssql/backup/restore-database.sql
