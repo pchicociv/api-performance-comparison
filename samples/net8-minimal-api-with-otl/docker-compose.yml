@@ -1,0 +1,55 @@
+version: '3.4'
+
+services:
+  
+  minimalapi:
+    image: ${DOCKER_REGISTRY-}minimalapi
+    environment:
+      OTLP_EXPORTER_ENDPOINT: "http://jaeger:4317"
+      ConnectionStrings__DefaultConnectionString: "Server=sqlserver,1433;Database=api_comparative_db;User Id=sa;Password=P@ssw0rd;"
+    depends_on:
+      - sqlserver
+      - jaeger
+    build:
+      context: .
+      dockerfile: MinimalAPI/Dockerfile
+    ports:
+      - "59555:80"
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    environment:
+      - COLLECTOR_OTLP_ENABLED=true
+    ports:
+      - "16686:16686"
+      - "4317:4317"
+      - "4318:4318"
+  collector:
+    image: otel/opentelemetry-collector:latest
+    command: ['--config=/etc/otel-collector-config.yaml']
+    volumes:
+      - ../../docker-images/nginx-otel/otel-collector-config.yaml:/etc/otel-collector-config.yaml
+  nginx:
+    image: nginx-otel:latest
+    build:
+      context: ../../docker-images/nginx-otel
+      dockerfile: ../../docker-images/nginx-otel/Dockerfile
+    ports:
+      - "59556:80"
+    volumes:
+      - ../../docker-images/nginx-otel/opentelemetry_module.conf:/etc/nginx/conf.d/opentelemetry_module.conf
+      - ../../docker-images/nginx-otel/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - minimalapi
+  
+  sqlserver:
+    image: api-comparative-db-mssql:latest 
+    build:
+      context: ../../docker-images/api-comparative-db-mssql
+      dockerfile: ../../docker-images/api-comparative-db-mssql/Dockerfile
+    environment:
+      - SA_PASSWORD=P@ssw0rd
+      - ACCEPT_EULA=Y
+    ports:
+      - "1433:1433"
+  
+
