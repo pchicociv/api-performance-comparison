@@ -6,6 +6,7 @@ Requisites:
 - Uses OpenTelemetry
 - Is behind a reverse proxy
 - Calls an stored procedure in SqlServer DB
+- Uses JWT
 
 Comparison metrics:
 - Requests per second
@@ -27,4 +28,5 @@ After that you will find the results in "test-results" folder.
 This sample contains an .NET 8 Minimal API which calls a stored procedure in a SQL Server DB. The procedure waits for 1 second and returns.
 The API service is behind an NGINX reverse proxy.
 Both the API and NGINX are configured to send telemety to a Jaeger instance.
+Method in API requires a JWT token.
 OTL Traces can be found at [http://localhost:16686](http://localhost:16686) 
