@@ -7,7 +7,7 @@ class ApiUser(HttpUser):
     def post_balance(self):
         headers = {"Content-Type": "application/json", "Accept": "application/json"}
         data = {
-            "procedureName": "WaitForIt",
-            "waitSeconds": "1"
+            "username": "MyUsername",
+            "password": "MyStr0ngP@ssw0rd"
         }
-        self.client.post("api/CallProcedure", json=data, headers=headers)
+        self.client.post("api/CreateUser", json=data, headers=headers)

@@ -6,6 +6,7 @@ services:
     image: ${DOCKER_REGISTRY-}minimalapi
     environment:
       OTLP_EXPORTER_ENDPOINT: "http://jaeger:4317"
+      JWT_SECRET_KEY: "3a1f27f794d37ed1f61ba3e11f794e72fd16a614aa96f1c1a8b2198007f74bab"
       ConnectionStrings__DefaultConnectionString: "Server=sqlserver,1433;Database=api_comparative_db;User Id=sa;Password=P@ssw0rd;"
     depends_on:
       - sqlserver
@@ -58,7 +59,14 @@ services:
       - ./locust:/mnt/locust
       - ../../test-results:/mnt/results
     entrypoint: []
-    command: /bin/sh -c "sleep 15 && locust -f /mnt/locust/locustfile_net8.py --headless -u 1000 -r 5 --run-time 120 --host http://nginx/ --html /mnt/results/net8-results.htm"
+    command:
+      - /bin/sh 
+      - -c 
+      - |
+        sleep 15 
+        locust -f /mnt/locust/locustfile_net8.py --headless -u 1000 -r 5 --run-time 120 --host http://nginx/ --html /mnt/results/net8-results.htm
+        locust -f /mnt/locust/locustfile_net8-jwt.py --headless -u 1000 -r 5 --run-time 120 --host http://nginx/ --html /mnt/results/net8-jwt-results.htm
+        locust -f /mnt/locust/locustfile_net8-crypto.py --headless -u 1000 -r 5 --run-time 120 --host http://nginx/ --html /mnt/results/net8-crypto-results.htm
     depends_on: 
       - nginx
     
